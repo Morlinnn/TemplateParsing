@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TemplateElementFactory {
+public class TemplateElementBuilder {
     private final TemplateElement element;
 
-    public TemplateElementFactory(String name, boolean isSelect) {
+    public TemplateElementBuilder(String name, boolean isSelect) {
         element = isSelect ? new SelectTemplateElement() : new TemplateElement();
         element.setName(name);
     }

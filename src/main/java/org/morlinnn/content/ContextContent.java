@@ -2,6 +2,7 @@ package org.morlinnn.content;
 
 import lombok.ToString;
 import org.morlinnn.reader.TemplateReader;
+import org.morlinnn.reader.template.SelectTemplateElement;
 import org.morlinnn.reader.template.TemplateElement;
 
 import java.util.ArrayList;
@@ -60,6 +61,9 @@ public class ContextContent {
     public TemplateElement findInTE(String name) {
         AtomicReference<TemplateElement> result = new AtomicReference<>(null);
         for (TemplateElement element : templateElementList) {
+            if (element instanceof SelectTemplateElement) continue;
+            if (element.getChildren() == null || element.getChildren().isEmpty()) continue;
+
             List<String> children = element.getChildren();
             children.stream().forEach(str -> {
                 if (str.startsWith(name)) {

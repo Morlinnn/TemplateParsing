@@ -1,7 +1,10 @@
 package org.morlinnn.reader.template;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.morlinnn.enums.DataType;
-import lombok.*;
 
 import java.util.List;
 

@@ -2,7 +2,7 @@ package org.morlinnn.reader;
 
 import org.morlinnn.enums.DataType;
 import org.morlinnn.reader.template.TemplateElement;
-import org.morlinnn.reader.template.TemplateElementFactory;
+import org.morlinnn.reader.template.TemplateElementBuilder;
 
 import java.util.*;
 
@@ -22,20 +22,20 @@ public class TemplateReader {
         String name = divided[0];
         List<String> field = divideFiled(divided[1], ',');
 
-        TemplateElementFactory templateElementFactory =
-                new TemplateElementFactory(name, isSelectTemplate(divided[1]));
+        TemplateElementBuilder templateElementBuilder =
+                new TemplateElementBuilder(name, isSelectTemplate(divided[1]));
 
         field.forEach(e -> {
             if (e.contains("(")) {
-                templateElementFactory.addEntry(readEntry(e));
+                templateElementBuilder.addEntry(readEntry(e));
             } else if (e.equals("required")) {
-                templateElementFactory.setRequired();
+                templateElementBuilder.setRequired();
             } else if (e.equals("constant")) {
-                templateElementFactory.setConstant();
+                templateElementBuilder.setConstant();
             }
         });
 
-        TemplateElement element = templateElementFactory.build();
+        TemplateElement element = templateElementBuilder.build();
 
         if (element == null) {
             System.out.println("模板为空: " + str);
@@ -58,7 +58,6 @@ public class TemplateReader {
      * @return
      */
     public static boolean checkValid(String str) {
-        // TODO 适应 list map
         // 必须包含类型且有效
         return readValue(str, "type") != null;
     }
