@@ -1,50 +1,53 @@
 package org.morlinnn.content;
 
-import org.morlinnn.interfaces.Adapter;
 import org.morlinnn.reader.template.TemplateElement;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Context extends ContextContent {
-    protected final Map<String, Class<? extends Adapter>> adapterMap;
+    /**
+     * 处于安全考虑设计了本地检查, 对于使用自定义类的反射构建只能使用注册的类
+    */
+    Map<String, Class<?>> correlativeClassMap;
 
     public Context() {
         super();
-        adapterMap = new HashMap<>();
+        correlativeClassMap = new HashMap<>();
     }
 
     /**
-     * 准确适应类
-     * @param name
-     * @param adapter
+     * 注册映射类
+     * @param fieldName 类的名称, 这与 yaml 配置中的键的名称对应
+     * @param clazz
      * @return
      */
-    public Context registerAdapter(String name, Class<? extends Adapter> adapter) {
-        adapterMap.put(name, adapter);
+    public Context registerCorrelativeClass(String fieldName, Class<?> clazz) {
+        correlativeClassMap.put(fieldName, clazz);
         return this;
     }
 
-    public Class<? extends Adapter> getAdapter(String name) {
-        return adapterMap.getOrDefault(name, null);
+    public Class<?> getCorrelativeClass(String fieldName) {
+        return correlativeClassMap.get(fieldName);
     }
 
     public Object createObject(String name, Map<String, Object> args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         TemplateElement element = find(name);
-        return createObjectPri(element, args);
+        return createObjectPri(correlativeClassMap.get(name), element, args);
     }
 
     public Object createObject(int id, Map<String, Object> args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         TemplateElement element = find(id);
-        return createObjectPri(element, args);
+        return createObjectPri(correlativeClassMap.get(find(id).getName()), element, args);
     }
 
-    private Object createObjectPri(TemplateElement element, Map<String, Object> args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        return AutoWire.buildObject(this, element, args);
+    private Object createObjectPri(Class<?> clazz, TemplateElement element, Map<String, Object> args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        return AutoWire.buildObject(clazz, this, element, args);
     }
 
     @Override
     public String toString() {
-        return "Context(" + "beanMap=" + adapterMap + ")\n" + super.toString();
+        return "Context(correlativeClassMap=" + correlativeClassMap + ")\n" + super.toString();
     }
 }

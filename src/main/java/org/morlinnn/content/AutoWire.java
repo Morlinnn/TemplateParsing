@@ -1,7 +1,7 @@
 package org.morlinnn.content;
 
-import org.morlinnn.interfaces.Adapter;
 import org.morlinnn.exception.IllegalTypeException;
+import org.morlinnn.exception.UnknownException;
 import org.morlinnn.reader.TemplateReader;
 import org.morlinnn.reader.template.TemplateElement;
 
@@ -10,12 +10,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class AutoWire {
-    private static Object getNoArgsObject(Class<? extends Adapter> adapter) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        return adapter.getConstructor().newInstance();
+    private static Object getNoArgsObject(Class<?> clazz) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        return clazz.getConstructor().newInstance();
     }
 
-    public static Object buildObject(Context context, TemplateElement element, Map<String, Object> args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        Object obj = getNoArgsObject(context.getAdapter(element.getName()));
+    public static Object buildObject(
+            Class<?> clazz,
+            Context context,
+            TemplateElement element,
+            Map<String, Object> args
+    ) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        Object obj = getNoArgsObject(clazz);
         autoAssignArgs(
                 obj,
                 context,
@@ -24,10 +29,13 @@ public class AutoWire {
         return obj;
     }
 
-    private static void autoAssignArgs(Object obj, Context context, Map<String, Object> args) {
+    private static void autoAssignArgs(
+            Object obj,
+            Context context,
+            Map<String, Object> args
+    ) {
         Set<Map.Entry<String, Object>> argEntry = args.entrySet();
         argEntry.forEach(entry -> {
-            System.out.println("key: " + entry.getKey() + " value: " + entry.getValue());
             assign(obj, entry.getKey(), entry.getValue(), context, findCorrespondingTE(entry.getKey(), context), args);
         });
     }
@@ -54,48 +62,50 @@ public class AutoWire {
         try {
             Field field = oClass.getDeclaredField(fieldName);
             field.setAccessible(true);
-            Class<?> fieldClass = field.getType();
-
-            // 检查类型
-            if (value.getClass() != valueElement.getType().getCorrespondingClass()
-                    && value.getClass().isNestmateOf(valueElement.getType().getCorrespondingClass()))
-                throw new IllegalTypeException(value.getClass(), valueElement.getType().getCorrespondingClass(), fieldClass);
+            Class<?> fieldClass = getValidClass(value, valueElement, field);
 
             // TODO 处理 Select 判断
-            // TODO required, constant, limit, parents, default, exclusive
-            System.out.println("field: " + field);
-
+            // TODO required, constant, limit, parents, default, exclusive, id, name
             if (Integer.class.equals(fieldClass) || int.class.equals(fieldClass)) {
                 field.set(obj, value);
             } else if (Short.class.equals(fieldClass) || short.class.equals(fieldClass)) {
-                field.set(obj, Short.valueOf(String.valueOf(value)));
+                field.set(obj, value instanceof Short? value : Short.valueOf(String.valueOf(value)));
             } else if (Long.class.equals(fieldClass) || long.class.equals(fieldClass)) {
                 field.set(obj, value);
             } else if (Character.class.equals(fieldClass) || char.class.equals(fieldClass)) {
-                field.set(obj, ((String) value).charAt(0));
+                field.set(obj, value instanceof Character? value : ((String) value).charAt(0));
             } else if (String.class.equals(fieldClass)) {
                 field.set(obj, value);
             } else if (Boolean.class.equals(fieldClass) || boolean.class.equals(fieldClass)) {
-                field.set(obj, Boolean.valueOf((String) value));
+                field.set(obj, value instanceof Boolean? value : Boolean.valueOf((String) value));
             } else if (Byte.class.equals(fieldClass) || byte.class.equals(fieldClass)) {
-                field.set(obj, Byte.valueOf((String) value));
+                field.set(obj, value instanceof Byte? value : Byte.valueOf((String) value));
             } else if (Float.class.equals(fieldClass) || float.class.equals(fieldClass)) {
-                field.set(obj, Float.valueOf((String) value));
+                field.set(obj, value instanceof Double? ((Double) value).floatValue() : value);
             } else if (Double.class.equals(fieldClass) || double.class.equals(fieldClass)) {
-                field.set(obj, Double.valueOf((String) value));
+                field.set(obj, value);
             } else if (List.class.equals(fieldClass)) {
                 // List, IsoMap 都会使用这个类型
                 field.set(obj, value);
             } else if (Map.class.equals(fieldClass)) {
                 // Map
-                field.set(obj, value);
+                // 转换为 HashMap
+                if (value.getClass().equals(HashMap.class)) {
+                    field.set(obj, value);
+                } else {
+                    field.set(obj, transformMap((Map<?, ?>) value));
+                }
             } else if (Set.class.equals(fieldClass)) {
                 // Set
-                // TODO assign Set
+                if (value.getClass().equals(HashSet.class)) {
+                    field.set(obj, value);
+                } else {
+                    field.set(obj, transformSet((Set<?>) value));
+                }
             } else {
                 // Object
-                Class<? extends Adapter> adapter = context.getAdapter(fieldName);
-                Object fieldObj = getNoArgsObject(adapter);
+                Class<?> clazz = context.getCorrelativeClass(fieldName);
+                Object fieldObj = getNoArgsObject(clazz);
                 autoAssignArgs(fieldObj, context, (Map<String, Object>) args.get(fieldName));
                 field.set(obj, fieldObj);
             }
@@ -103,14 +113,33 @@ public class AutoWire {
             System.out.println("未找到对应的 field: " + fieldName);
         } catch (IllegalAccessException ignored) {
             System.out.println("错误类型的赋值: " + value);
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        } catch (InstantiationException e) {
+        } catch (InvocationTargetException | InstantiationException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("setDone: " + fieldName);
+    }
+
+    private static <K, V> HashMap<K, V> transformMap(Map<K, V> map) {
+        return new HashMap<>(map);
+    }
+
+    private static <V> HashSet<V> transformSet(Set<V> set) {
+        return new HashSet<>(set);
+    }
+
+    private static Class<?> getValidClass(Object value, TemplateElement valueElement, Field field) {
+        Class<?> fieldClass = field.getType();
+
+        // 检查类型
+        Class<?> templateType = valueElement.getType().getCorrespondingClass();
+        if (templateType == null) throw new UnknownException("值类型为空(来自于 DataType#getCorrespondingClass)");
+        // value 与 template
+        if (!templateType.isAssignableFrom(value.getClass())
+                // field 与 value
+                && !fieldClass.isAssignableFrom(value.getClass())
+        ) {
+            throw new IllegalTypeException(value.getClass(), valueElement.getType().getCorrespondingClass(), fieldClass);
+        }
+        return fieldClass;
     }
 
     private static <T> ArrayList<T> createArrayList(Class<T> clazz) {
