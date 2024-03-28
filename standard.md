@@ -34,51 +34,95 @@ Boolean.class
 Integer.class -> Byte
 #### Char
 **注意表上引号以识别为`String`, 只能有一个字符**
-String.class -> Character.class                     |
+String.class -> Character.class
 
 ### 结构数据类型
+#### TODO 支持 Object 的 List, Map, IsoMap
+```yaml
+# Object -> List
+TestA:
+  - obj
+  - obj
+# Object -> Map
+TestB:
+  randomA: obj
+  randomB: obj
+# Object -> IsoMap
+TestC:
+  - randomA: obj
+  - randomB: obj
+```
 ##### List
+注意 elements 的键设置是无效的
+
 子项类型作为数组类型, 子项唯一。
 子项名称没有实际意义, 它不会被加载, 可以不指定。
+List 的 value 可以使用 Select 组成多选列表, value 部分可以替换为引用 (name, id) 指向其他模板
 
-|          | expList                                                   |
-|----------|-----------------------------------------------------------|
-| template | expList: type(List), children(value: type(Int))           |
-| in class | List<Integer> expList                                     |
-| instance | ArrayList.class                                           |
-| tab      | id, default, required, parents, children, limit, constant |
+|          | expList                                          |
+|----------|--------------------------------------------------|
+| template | expList: type(List), elements(value: type(Int))  |
+| in class | List<Integer> expList                            |
+| instance | ArrayList.class                                  |
+| tab      | id, default, required, elements, limit, constant |
+
+```yaml
+expList:
+  - 10
+  - 20
+```
 
 ##### Map
+注意 elements 的键设置是无效的
+
 子项为 key 和 value, 用于指定 Map 的键值对类型。
-两个子项唯一, 名称用于区分键值类型, 名称唯一。
+两个子项唯一, 名称用于区分键值类型, key 名称设置是无效的。
 
 |          | expMap                                                         |
 |----------|----------------------------------------------------------------|
-| template | expMap: type(Map), children(key: type(Int); value: type(Char)) |
+| template | expMap: type(Map), elements(key: type(Int); value: type(Char)) |
 | in class | Map<Integer, Character> expMap                                 |
 | instance | HashMap.class                                                  |
-| tab      | id, default, required, parents, children, limit                |
+| tab      | id, default, required, elements, limit, exclusive, *constant   |
+
+```yaml
+expMap:
+  10: c
+  20: d
+```
 
 ##### IsoMap
+注意 elements 的 key 名称设置是无效的
 Isolation Map, 隔离图, 用于存放多个同类但类容不同的 Map
 
 |          | expIsoMap                                                          |
 |----------|--------------------------------------------------------------------|
-| template | expOMap: type(IsoMap), children(key: type(Int), value: type(Char)) |
+| template | expOMap: type(IsoMap), elements(key: type(Int), value: type(Char)) |
 | in class | List<Map<Int, Char>> expIsoMap                                     |
 | instance | ArrayList.class                                                    |
-| tab      | id, default, required, parents, children, limit, constant          |
+| tab      | id, default, required, elements, limit, constant                   |
+```yaml
+expIsoMap:
+  - 10: a
+    20: b
+  - 80: e
+```
 
 ##### Set
-无序list
-HashSet.class
+注意 elements 的键设置是无效的
 
-|          | expSet                                                         |
-|----------|----------------------------------------------------------------|
-| template | expSet: type(Set), children(value: type(Char))                 |
-| in class | Set<Character> expIsoMap                                       |
-| instance | HashSet.class                                                  |
-| tab      | id, default, required, parents, children, limit, *constant(默认) |
+|          | expSet                                                           |
+|----------|------------------------------------------------------------------|
+| template | expSet: type(Set), elements(value: type(Char))                   |
+| in class | Set<Character> expIsoMap                                         |
+| instance | HashSet.class                                                    |
+| tab      | id, default, required, elements, limit, *constant(默认), exclusive |
+
+```yaml
+expSet: !!set
+  - c
+  - d
+```
 
 #### 特殊
 ##### Object
@@ -86,20 +130,26 @@ HashSet.class
 
 |          | expObj                                                                    |
 |----------|---------------------------------------------------------------------------|
-| template | expObj: type(Object), children(test1: type(Int); test2: type(OtherClass)) |
+| template | expObj: type(Object), elements(test1: type(Int); test2: type(OtherClass)) |
 | in class | YourObject expObj                                                         |
 | instance | YourObject.class                                                          |
-| tab      | id, default, required, parents, children, limit                           |
+| tab      | id, default, required, elements, limit, exclusive                         |
+
+```yaml
+expObj:
+  test1: 10
+  test2: ...
+```
 
 ##### Select
 仅选择
 
-|          | expSelect                                                 |
-|----------|-----------------------------------------------------------|
-| template | expSelect: type(Select), selection(Int: 1,23,66,9,-1)     |
-| in class | int expSelect                                             |
-| instance | SelectionType                                             |
-| tab      | id, default, required, parents, children, limit, constant |
+|          | expSelect                                             |
+|----------|-------------------------------------------------------|
+| template | expSelect: type(Select), selection(Int: 1,23,66,9,-1) |
+| in class | int expSelect                                         |
+| instance | SelectionType                                         |
+| tab      | id, default, required, selection, *constant(默认)       |
 
 ## 模板规范
 ### 结构
@@ -108,9 +158,9 @@ HashSet.class
 例
 ```
 Elements:
-    Config: id(1),type(Map),children(int: type(Int),required; map; id(2))
-    map: type(Map),parents(id(1)),children(test: type(Char); text: type(Char))
-    omap: id(2),type(OMap),children(test: type(Char); id(1))
+    Config: id(1),type(Map),elements(int: type(Int),required; map; id(2))
+    map: type(Map),elements(test: type(Char); text: type(Char))
+    omap: id(2),type(OMap),elements(test: type(Char); id(1))
 ```
 ```
 Config:
@@ -141,6 +191,8 @@ id默认为-1, 所以-1不应当被用于id
 `id(123)`
 #### default
 默认值
+内容为 yaml String
+**计划实现** 自定义 Object 的默认值
 
 `default(10)`
 #### required
@@ -149,28 +201,23 @@ id默认为-1, 所以-1不应当被用于id
 常用于必要子项的标记
 
 ### 关系标记
-#### parents
-父项
-
-标记父项则只能出现在指定父项下, 否在报错
-
-`parents(p1;p2)`
-#### children
+#### elements
 子项
 
 适用于 `list` `map` `omap` `set` `choice`
 
-`children(c1;c2)`
-`children(id(12);c2;id(10))`
+`elements(c1;c2)`
+`elements(id(12);c2;id(10))`
 #### limit
 限制子项数量
 
-`limit(1)`
-`limit(1,3)`
+`limit(1)` 最小1个元素
+`limit(1,3)` 最小1个, 最大3个
 #### exclusive
-只能写入其中一项
+独占, 只能写入其中一项
+这个配置可以重复写
 
-`exclusive(x1;x2;x3)`
+`exclusive(x1;x2;id(3)), exclusive(x2;x5)`
 #### constant
 限制 List 的重复选项, 不允许重复
 
