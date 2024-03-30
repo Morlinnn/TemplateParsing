@@ -139,9 +139,9 @@ public class AutoWire {
                 AutoWireObject.setObjectArgs(field, obj, args, valueElement, context);
             }
 
-            System.out.println("name: "+ fieldName +"\nvalue: " + value + " type: " + value.getClass() +
-                    "\nfield: " + field.get(obj).getClass() + "\nVE: "+
-                    (valueElement instanceof SelectTemplateElement?((SelectTemplateElement) valueElement).getSelectionType().getCorrespondingClass():valueElement.getType().getCorrespondingClass()) + "\n");
+//            System.out.println("name: "+ fieldName +"\nvalue: " + value + " type: " + value.getClass() +
+//                    "\nfield: " + field.get(obj).getClass() + "\nVE: "+
+//                    (valueElement instanceof SelectTemplateElement?((SelectTemplateElement) valueElement).getSelectionType().getCorrespondingClass():valueElement.getType().getCorrespondingClass()) + "\n");
         } catch (NoSuchFieldException ignored) {
             System.out.println("未找到对应的 field: " + fieldName);
         } catch (IllegalAccessException ignored) {
