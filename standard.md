@@ -1,4 +1,12 @@
 # 解析规范
+## 多行书写
+模板以隔行经行模板分割
+```
+template1: id(1)
+
+template2: id(2)
+```
+
 ## type
 
 ### 注意
@@ -83,7 +91,7 @@ expList:
 | template | expMap: type(Map), elements(key: type(Int); value: type(Char)) |
 | in class | Map<Integer, Character> expMap                                 |
 | instance | HashMap.class                                                  |
-| tab      | id, default, required, elements, limit, exclusive, *constant   |
+| tab      | id, default, required, elements, limit                         |
 
 ```yaml
 expMap:
@@ -111,12 +119,12 @@ expIsoMap:
 ##### Set
 注意 elements 的键设置是无效的
 
-|          | expSet                                                           |
-|----------|------------------------------------------------------------------|
-| template | expSet: type(Set), elements(value: type(Char))                   |
-| in class | Set<Character> expIsoMap                                         |
-| instance | HashSet.class                                                    |
-| tab      | id, default, required, elements, limit, *constant(默认), exclusive |
+|          | expSet                                                |
+|----------|-------------------------------------------------------|
+| template | expSet: type(Set), elements(value: type(Char))        |
+| in class | Set<Character> expIsoMap                              |
+| instance | HashSet.class                                         |
+| tab      | id, default, required, elements, limit, *constant(默认) |
 
 ```yaml
 expSet: !!set
@@ -133,7 +141,7 @@ expSet: !!set
 | template | expObj: type(Object), elements(test1: type(Int); test2: type(OtherClass)) |
 | in class | YourObject expObj                                                         |
 | instance | YourObject.class                                                          |
-| tab      | id, default, required, elements, limit, exclusive                         |
+| tab      | id, default, required, elements, exclusive                                |
 
 ```yaml
 expObj:
