@@ -1,5 +1,6 @@
 package org.morlinnn.reader;
 
+import org.morlinnn.content.ContextContent;
 import org.morlinnn.enums.DataType;
 import org.morlinnn.reader.template.TemplateElement;
 import org.morlinnn.reader.template.TemplateElementBuilder;
@@ -7,7 +8,7 @@ import org.morlinnn.reader.template.TemplateElementBuilder;
 import java.util.*;
 
 public class TemplateReader {
-    public static TemplateElement parse(String str) {
+    public static TemplateElement read(String str) {
         if (!checkValid(str)) {
             System.out.println("无效的模板元素: " + str);
             return null;
@@ -146,12 +147,13 @@ public class TemplateReader {
     }
 
     /**
-     * 使用 ';' 分割
+     * 使用 ';' 分割, 已经对每一个分割的子项去除了无用空格
      * @param fieldStr
      * @return
      */
     public static List<String> divideFiled(String fieldStr, char split) {
-        if (!fieldStr.contains(",")) {
+        // 没有分隔符
+        if (!fieldStr.contains(String.valueOf(split))) {
             List<String> res = new ArrayList<>();
             res.add(fieldStr);
             return res;
@@ -256,4 +258,21 @@ public class TemplateReader {
         return str.substring(start, end);
     }
 
+    public static String parseUnknownToName(String str, ContextContent context) {
+        // 模板
+        if (str.contains(":")) {
+            return readNameBySplit(str, findFirstChar(str, ':'));
+        } else if (str.startsWith("id(")) {
+            // id
+            String idValue = TemplateReader.readValue(str, "id");
+            if (idValue == null) throw new IllegalArgumentException("错误的id: " + str);
+            int id = Integer.parseInt(idValue);
+            TemplateElement foundResult = context.find(id);
+            if (foundResult == null) return null;
+            return foundResult.getName();
+        } else {
+            // name
+            return str;
+        }
+    }
 }

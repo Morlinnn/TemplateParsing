@@ -34,8 +34,7 @@ public class TemplateElementBuilder {
                     throw new IllegalArgumentException("type 的书写错误 " + entry.getValue());
                 }
             }
-            case "parents" -> element.setParents(readStrings(TemplateReader.removeUselessSpace(entry.getValue())));
-            case "children" -> element.setChildren(readChildren(TemplateReader.removeUselessSpace(entry.getValue())));
+            case "elements" -> element.setElements(readElements(TemplateReader.removeUselessSpace(entry.getValue())));
             case "limit" -> {
                 try {
                     element.setLimit(readLimit(TemplateReader.removeUselessSpace(entry.getValue())));
@@ -43,7 +42,7 @@ public class TemplateElementBuilder {
                     throw new IllegalArgumentException("limit 应为 Integer 类型, 而不是 " + entry.getValue());
                 }
             }
-            case "exclusive" -> element.setExclusive(readStrings(TemplateReader.removeUselessSpace(entry.getValue())));
+            case "exclusive" -> setExclusive(TemplateReader.removeUselessSpace(entry.getValue()));
             case "default" -> element.setDefaultValue(TemplateReader.removeUselessSpace(entry.getValue()));
             case "selection" -> {
                 if (!(element instanceof SelectTemplateElement))
@@ -83,16 +82,17 @@ public class TemplateElementBuilder {
     }
 
     public TemplateElement build() {
+        System.out.println(element);
         if (!element.checkIntegrality()) return null;
-        if (!element.constant && element.type == DataType.Set) element.constant = true;
         return element;
     }
 
-    private List<String> readStrings(String str) {
-        return new ArrayList<>(TemplateReader.divideFiled(str, ','));
+    private void setExclusive(String str) {
+        if (element.getExclusive() == null) element.setExclusive(new ArrayList<>());
+        element.getExclusive().add(TemplateReader.divideFiled(str, ';'));
     }
 
-    private List<String> readChildren(String str) {
+    private List<String> readElements(String str) {
         return new ArrayList<>(TemplateReader.divideFiled(str, ';'));
     }
 
