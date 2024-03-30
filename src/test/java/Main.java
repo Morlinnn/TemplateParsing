@@ -10,13 +10,13 @@ import java.util.Map;
 public class Main extends TestData {
     public static void main(String[] args) {
         Context context = new Context();
-        context.add(TemplateReader.parse(t1), true);
-        context.add(TemplateReader.parse(t2), true);
-        context.add(TemplateReader.parse(t3), true);
-        context.add(TemplateReader.parse(t4), true);
-        context.add(TemplateReader.parse(t5), true);
-        context.add(TemplateReader.parse(t6), true);
-        context.add(TemplateReader.parse(t7), false);
+        context.add(TemplateReader.read(t1), true);
+        context.add(TemplateReader.read(t2), true);
+        context.add(TemplateReader.read(t3), true);
+        context.add(TemplateReader.read(t4), true);
+        context.add(TemplateReader.read(t5), true);
+        context.add(TemplateReader.read(t6), true);
+        context.add(TemplateReader.read(t7), false);
         System.out.println(context);
 
         context.registerCorrelativeClass("Config", Config.class);
