@@ -82,7 +82,7 @@ public class TemplateElementBuilder {
     }
 
     public TemplateElement build() {
-        System.out.println(element);
+//        System.out.println(element);
         if (!element.checkIntegrality()) return null;
         return element;
     }
