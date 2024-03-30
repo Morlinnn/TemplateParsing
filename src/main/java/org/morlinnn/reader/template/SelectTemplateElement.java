@@ -21,9 +21,8 @@ public class SelectTemplateElement extends TemplateElement {
         return super.checkIntegrality() && selectionType != null && selection != null && !selection.isEmpty();
     }
 
-    @Override
-    public boolean isSelect() {
-        return true;
+    public boolean isInSelection(Object select) {
+        return selection.contains(select);
     }
 
     @Override
@@ -34,8 +33,7 @@ public class SelectTemplateElement extends TemplateElement {
                 ", name='" + name + '\'' +
                 ", type=" + type +
                 ", id=" + id +
-                ", parents=" + parents +
-                ", children=" + children +
+                ", elements=" + elements +
                 ", required=" + required +
                 ", limit=" + limit +
                 ", exclusive=" + exclusive +

@@ -4,9 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.morlinnn.content.ContextContent;
 import org.morlinnn.enums.DataType;
+import org.morlinnn.reader.TemplateReader;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Getter
 @Setter
@@ -19,20 +22,57 @@ public class TemplateElement {
     protected String name;
     protected DataType type;
     protected int id = -1;
-    protected List<String> parents;
-    protected List<String> children;
+    protected List<String> elements;
     protected boolean required = false;
     protected List<Integer> limit;
-    protected List<String> exclusive;
-    protected Object defaultValue;
+    protected List<List<String>> exclusive;
+    protected String defaultValue;
     protected boolean constant = false;
 
     public boolean checkIntegrality() {
+        // Set
+        if (type == DataType.Set && !constant) constant = true;
+
+        // 检查 List, Set, Map 的 elements
+        if (type == DataType.List || type == DataType.Set || type == DataType.Map) {
+            // elements 有且必须设置
+            if (elements == null || elements.isEmpty()) {
+                throw new IllegalArgumentException(type.name() + " 必须设置 elements");
+            }
+            // List, Set
+            if ((type == DataType.List || type == DataType.Set) && elements.size() != 1) {
+                throw new IllegalArgumentException(type.name() + " 的 elements 只能设置一项");
+            }
+            // Map
+            if (type == DataType.Map && elements.size() != 2) {
+                throw new IllegalArgumentException("Map 的 elements 只能设置两项");
+            }
+        }
+
+        // 检查 Map
+
+        // limit
+        if (limit != null && (limit.isEmpty() || limit.size() > 2)) {
+            throw new IllegalArgumentException("已设置的 limit 元素数量应为 1 或 2 项");
+        }
+
         return type != null;
     }
 
-    public boolean isSelect() {
-        return false;
+    public boolean containsInElements(ContextContent context, String name) {
+        // Select 不使用 elements
+        if (this instanceof SelectTemplateElement) return true;
+        if (elements == null || elements.isEmpty()) return false;
+
+        AtomicBoolean result = new AtomicBoolean(false);
+        elements.forEach(child -> {
+            if (result.get()) return;
+
+            String nullableName = TemplateReader.parseUnknownToName(child, context);
+            if (nullableName == null) return;
+            if (nullableName.equals(name)) result.set(true);
+        });
+        return result.get();
     }
 
     @Override
@@ -41,8 +81,7 @@ public class TemplateElement {
                 "name='" + name + '\'' +
                 ", type=" + type +
                 ", id=" + id +
-                ", parents=" + parents +
-                ", children=" + children +
+                ", elements=" + elements +
                 ", required=" + required +
                 ", limit=" + limit +
                 ", exclusive=" + exclusive +

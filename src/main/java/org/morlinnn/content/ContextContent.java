@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @ToString
 public class ContextContent {
     protected final List<TemplateElement> templateElementList;
+    protected boolean unchanged = false;
 
     public ContextContent() {
         templateElementList = new ArrayList<>();
@@ -24,6 +25,8 @@ public class ContextContent {
                 if (recover) {
                     templateElementList.remove(e);
                     templateElementList.add(element);
+
+                    unchanged = false;
                 } else {
                     return;
                 }
@@ -58,14 +61,14 @@ public class ContextContent {
         return null;
     }
 
-    public TemplateElement findInTE(String name) {
+    public TemplateElement findInElement(String name) {
         AtomicReference<TemplateElement> result = new AtomicReference<>(null);
         for (TemplateElement element : templateElementList) {
             if (element instanceof SelectTemplateElement) continue;
-            if (element.getChildren() == null || element.getChildren().isEmpty()) continue;
+            if (element.getElements() == null || element.getElements().isEmpty()) continue;
 
-            List<String> children = element.getChildren();
-            children.stream().forEach(str -> {
+            List<String> elements = element.getElements();
+            elements.forEach(str -> {
                 if (str.startsWith(name)) {
                     result.set(readField(str));
                 }
@@ -76,7 +79,7 @@ public class ContextContent {
     }
 
     /**
-     * 查询 children 字段的对应内容
+     * 查询 elements 字段的对应内容
      * @param stringField
      * @return
      */
@@ -98,10 +101,25 @@ public class ContextContent {
             ).toList();
         } else {
             // 写的是模板基本数据模板或完整模板
-            // 但在 children 中写入完整模板是不推荐的, 因为此处的模板不可复用
+            // 但在 elements 中写入完整模板是不推荐的, 因为此处的模板不可复用
             // test: type(Char), required
-            return TemplateReader.parse(stringField);
+            return TemplateReader.read(stringField);
         }
         return res.isEmpty() ? null : res.get(0);
+    }
+
+    protected void parseExclusiveItemToName() {
+        unchanged = true;
+        templateElementList.forEach(templateElement -> {
+            if (templateElement.getExclusive() == null || templateElement.getExclusive().isEmpty()) return;
+
+            for (List<String> exclusiveItem : templateElement.getExclusive()) {
+                for (int i = 0; i < exclusiveItem.size(); i++) {
+                    if (exclusiveItem.get(i).startsWith("id(") || exclusiveItem.get(i).contains(":")) {
+                        exclusiveItem.set(i, TemplateReader.parseUnknownToName(exclusiveItem.get(i), this));
+                    }
+                }
+            }
+        });
     }
 }

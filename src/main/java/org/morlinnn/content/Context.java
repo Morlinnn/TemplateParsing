@@ -1,5 +1,7 @@
 package org.morlinnn.content;
 
+import org.morlinnn.interfaces.Adapter;
+import org.morlinnn.autowire.AutoWire;
 import org.morlinnn.reader.template.TemplateElement;
 
 import java.lang.reflect.InvocationTargetException;
@@ -10,7 +12,7 @@ public class Context extends ContextContent {
     /**
      * 处于安全考虑设计了本地检查, 对于使用自定义类的反射构建只能使用注册的类
     */
-    Map<String, Class<?>> correlativeClassMap;
+    private Map<String, Class<? extends Adapter>> correlativeClassMap;
 
     public Context() {
         super();
@@ -23,12 +25,12 @@ public class Context extends ContextContent {
      * @param clazz
      * @return
      */
-    public Context registerCorrelativeClass(String fieldName, Class<?> clazz) {
+    public Context registerCorrelativeClass(String fieldName, Class<? extends Adapter> clazz) {
         correlativeClassMap.put(fieldName, clazz);
         return this;
     }
 
-    public Class<?> getCorrelativeClass(String fieldName) {
+    public Class<? extends Adapter> getCorrelativeClass(String fieldName) {
         return correlativeClassMap.get(fieldName);
     }
 
@@ -43,6 +45,7 @@ public class Context extends ContextContent {
     }
 
     private Object createObjectPri(Class<?> clazz, TemplateElement element, Map<String, Object> args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        if (!unchanged) parseExclusiveItemToName();
         return AutoWire.buildObject(clazz, this, element, args);
     }
 

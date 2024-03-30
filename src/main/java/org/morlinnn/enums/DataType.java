@@ -1,5 +1,8 @@
 package org.morlinnn.enums;
 
+import org.morlinnn.exception.IllegalOperationException;
+import org.morlinnn.exception.UnknownException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,7 +33,7 @@ public enum DataType {
 
     public Class<?> getCorrespondingClass() {
         switch (this) {
-            case Object, Select -> {
+            case Object -> {
                 return java.lang.Object.class;
             }
             case Int -> {
@@ -69,8 +72,11 @@ public enum DataType {
             case Map -> {
                 return HashMap.class;
             }
+            case Select -> {
+                throw new IllegalOperationException("真的需要获取 Select 的类型吗, 如果需要获取子项的类型应该使用 SelectTemplate#getSelectionType#getCorrespondingClass");
+            }
             default -> {
-                return null;
+                throw new UnknownException("值类型为空(来自于 DataType#getCorrespondingClass)");
             }
         }
     }
