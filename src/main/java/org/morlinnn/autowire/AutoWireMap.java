@@ -1,6 +1,8 @@
 package org.morlinnn.autowire;
 
 import org.morlinnn.content.ContextContent;
+import org.morlinnn.enums.DataType;
+import org.morlinnn.exception.IllegalTypeException;
 import org.morlinnn.exception.UnknownException;
 import org.morlinnn.reader.template.SelectTemplateElement;
 import org.morlinnn.reader.template.TemplateElement;
@@ -52,13 +54,23 @@ public class AutoWireMap {
         Class<?> valueType = valueE instanceof SelectTemplateElement
                 ? ((SelectTemplateElement) valueE).getSelectionType().getCorrespondingClass()
                 : valueE.getType().getCorrespondingClass();
-
         // field type
         Type[] argTypes = AutoWireList.getGenericArgType(field.getGenericType());
         Class<?> keyFieldType = (Class<?>) argTypes[0];
         Class<?> valueFieldType = (Class<?>) argTypes[1];
-        TabHandler.handleIfTypeNotConsistent(keyFieldType, Object.class, keyType);
-        TabHandler.handleIfTypeNotConsistent(valueFieldType, Object.class, valueType);
+
+        // dynamic
+        if (keyType == DataType.class && keyFieldType != Object.class) {
+            throw new IllegalTypeException("Dynamic 类型的接收类应该是 Object");
+        } else if (keyType != DataType.class) {
+            TabHandler.handleIfTypeNotConsistent(keyFieldType, Object.class, keyType);
+        }
+
+        if (valueType == DataType.class && valueFieldType != Object.class) {
+            throw new IllegalTypeException("Dynamic 类型的接收类应该是 Object");
+        } else if (valueType != DataType.class) {
+            TabHandler.handleIfTypeNotConsistent(valueFieldType, Object.class, valueType);
+        }
     }
 
     private static void handleLimit(TemplateElement valueElement, Map<?, ?> value) {

@@ -1,6 +1,8 @@
 package org.morlinnn.autowire;
 
 import org.morlinnn.content.ContextContent;
+import org.morlinnn.enums.DataType;
+import org.morlinnn.exception.IllegalTypeException;
 import org.morlinnn.exception.UnknownException;
 import org.morlinnn.reader.template.SelectTemplateElement;
 import org.morlinnn.reader.template.TemplateElement;
@@ -39,6 +41,14 @@ public class AutoWireSet {
                 : value.getType().getCorrespondingClass();
         // field type
         Class<?> fieldType = (Class<?>) AutoWireList.getGenericArgType(field.getGenericType())[0];
+
+        // dynamic
+        if (valueType == DataType.class && fieldType != Object.class) {
+            throw new IllegalTypeException("Dynamic 类型的接收类应该是 Object");
+        } else if (fieldType == Object.class) {
+            return;
+        }
+
         TabHandler.handleIfTypeNotConsistent(fieldType, Object.class, valueType);
     }
 

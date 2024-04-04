@@ -2,6 +2,7 @@ package org.morlinnn.autowire;
 
 import org.morlinnn.content.ContextContent;
 import org.morlinnn.enums.DataType;
+import org.morlinnn.exception.IllegalTypeException;
 import org.morlinnn.exception.UnknownException;
 import org.morlinnn.reader.template.SelectTemplateElement;
 import org.morlinnn.reader.template.TemplateElement;
@@ -49,6 +50,14 @@ public class AutoWireList {
         // 无法在运行时获取元素类型, 因为编译后会进行类型擦除
         Class<?> valueElementType = Object.class;
         Class<?> templateElementType = getTemplateElementType(valueElement, context);
+
+        // dynamic
+        if (templateElementType == DataType.class && fieldElementType != Object.class) {
+            throw new IllegalTypeException("Dynamic 类型的接收类应该是 Object");
+        } else if (fieldElementType == Object.class) {
+            return;
+        }
+
         TabHandler.handleIfTypeNotConsistent(fieldElementType, valueElementType, templateElementType);
     }
 
@@ -56,9 +65,11 @@ public class AutoWireList {
         if (valueElement.getType() == DataType.IsoMap) return Map.class;
 
         List<String> elements = valueElement.getElements();
+        // 获取第一个元素
         TemplateElement child = context.readField(elements.get(0));
-        if (child instanceof SelectTemplateElement) return ((SelectTemplateElement) child).getSelectionType().getCorrespondingClass();
-        return child.getType().getCorrespondingClass();
+        return (child instanceof SelectTemplateElement)
+            ?((SelectTemplateElement) child).getSelectionType().getCorrespondingClass()
+            : child.getType().getCorrespondingClass();
     }
 
     private static Class<?> getListFieldElementType(Field field) {
