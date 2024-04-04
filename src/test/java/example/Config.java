@@ -19,7 +19,8 @@ public class Config implements Adapter {
     private List<Integer> expList;
     private int expSelect;
     private ExpObject expObject;
-    private Set<String> expSet;
+    private Set<Object> expSet;
+    private List<ExpObject> expObjectList;
 
     public Config() {}
 
