@@ -17,6 +17,7 @@ public enum DataType {
     Char,
     Byte,
     Bool,
+    Dynamic,
     List,
     Object,
     Map,
@@ -35,6 +36,10 @@ public enum DataType {
         switch (this) {
             case Object -> {
                 return java.lang.Object.class;
+            }
+            case Dynamic -> {
+                // 并没有打算创建一个新的标记类, 这只是偷懒的方法
+                return DataType.class;
             }
             case Int -> {
                 return Integer.class;

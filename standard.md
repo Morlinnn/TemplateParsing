@@ -43,23 +43,11 @@ Integer.class -> Byte
 #### Char
 **注意表上引号以识别为`String`, 只能有一个字符**
 String.class -> Character.class
+#### Dynamic
+类型不定的动态类型
+Object.class
 
 ### 结构数据类型
-#### TODO 支持 Object 的 List, Map, IsoMap
-```yaml
-# Object -> List
-TestA:
-  - obj
-  - obj
-# Object -> Map
-TestB:
-  randomA: obj
-  randomB: obj
-# Object -> IsoMap
-TestC:
-  - randomA: obj
-  - randomB: obj
-```
 ##### List
 注意 elements 的键设置是无效的
 
@@ -158,6 +146,30 @@ expObj:
 | in class | int expSelect                                         |
 | instance | SelectionType                                         |
 | tab      | id, default, required, selection, *constant(默认)       |
+
+
+##### 支持 Object 的 List, Map, IsoMap
+```java
+private List<Obj> TestA;
+```
+
+```yaml
+# Object -> List
+Obj:
+  name: Steve
+TestA:
+  - Obj:
+      name: Steve
+  - Obj...
+# Object -> Map
+TestB:
+  randomA: Obj...
+  randomB: Obj...
+# Object -> IsoMap
+TestC:
+  - randomA: Obj...
+  - randomB: Obj...
+```
 
 ## 模板规范
 ### 结构

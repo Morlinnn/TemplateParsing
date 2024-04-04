@@ -8,4 +8,8 @@ public class IllegalTypeException extends IllegalArgumentException {
     public IllegalTypeException(Class<?> valueType, Class<?> templateClass) {
         super("类型不匹配, 值类型为 " + valueType + ", template 类型为 " + templateClass);
     }
+
+    public IllegalTypeException(String message) {
+        super(message);
+    }
 }
