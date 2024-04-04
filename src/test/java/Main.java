@@ -16,7 +16,8 @@ public class Main extends TestData {
         context.add(TemplateReader.read(t4), true);
         context.add(TemplateReader.read(t5), true);
         context.add(TemplateReader.read(t6), true);
-        context.add(TemplateReader.read(t7), false);
+        context.add(TemplateReader.read(t7), true);
+        context.add(TemplateReader.read(t8), true);
         System.out.println(context);
 
         context.registerCorrelativeClass("Config", Config.class);
@@ -27,6 +28,11 @@ public class Main extends TestData {
             Object config = context.createObject(1, (Map<String, Object>) loadedYaml);
             System.out.println(loadedYaml);
             System.out.println(config);
+
+            // dynamic example in set
+            System.out.println("\ndynamic example");
+            ((Config) config).getExpSet()
+                    .forEach(e -> System.out.println(e.getClass()));
         } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
