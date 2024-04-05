@@ -229,6 +229,7 @@ public class TemplateReader {
         } else if (str.length() == 1 && str.charAt(0) == ' ') {
             return null;
         }
+        if (!str.startsWith(" ") && str.charAt(str.length() - 1) != ' ') return str;
         if (str.length() == 2) return str.replaceAll(" ", "");
         // 移除开头和结尾的空格
         int start = -1;
