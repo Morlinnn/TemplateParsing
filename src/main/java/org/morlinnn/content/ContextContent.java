@@ -8,6 +8,7 @@ import org.morlinnn.reader.template.TemplateElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @ToString
 public class ContextContent {
@@ -92,13 +93,13 @@ public class ContextContent {
                     e.getId() == Integer.parseInt(
                             TemplateReader.readEntry(
                                     TemplateReader.removeUselessSpace(stringField)
-                            ).getValue())).toList();
+                            ).getValue())).collect(Collectors.toList());
         } else if (!stringField.contains(":")) {
             // 写的是名
             // test
             res = templateElementList.stream().filter(e ->
                     e.getName().equals(TemplateReader.removeUselessSpace(stringField))
-            ).toList();
+            ).collect(Collectors.toList());
         } else {
             // 写的是模板基本数据模板或完整模板
             // 但在 elements 中写入完整模板是不推荐的, 因为此处的模板不可复用

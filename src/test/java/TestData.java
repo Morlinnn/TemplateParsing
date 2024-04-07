@@ -23,31 +23,29 @@ public class TestData {
     static String t6 = "expObject: id(6), type(Object), elements(name: type(String), required; expObject)";
     static String t7 = "expSet: id(7), type(Set), elements(value: type(Dynamic))";
     static String t8 = "expObjectList: id(8), type(List), elements(id(6))";
-    static String yamlConfig = """
-                    Config:
-                        second: 1.0
-                        expMap:
-                            test: t
-                        expIsoMap:
-                            - test: e
-                            - test: s
-                        expList:
-                            - 1
-                            - 2
-                        expSelect: 1
-                        expObject:
-                            name: nameless
-                            expObject:
-                                name: 123
-                                expObject:
-                                    name: end
-                        expSet: !!set
-                            ? set2
-                            ? 123
-                        expObjectList:
-                            - expObject:
-                                name: aaa
-                            - expObject:
-                                name: bbb
-                   \s""";
+    static String yamlConfig = "Config:\n" +
+            "                        second: 1.0\n" +
+            "                        expMap:\n" +
+            "                            test: t\n" +
+            "                        expIsoMap:\n" +
+            "                            - test: e\n" +
+            "                            - test: s\n" +
+            "                        expList:\n" +
+            "                            - 1\n" +
+            "                            - 2\n" +
+            "                        expSelect: 1\n" +
+            "                        expObject:\n" +
+            "                            name: nameless\n" +
+            "                            expObject:\n" +
+            "                                name: 123\n" +
+            "                                expObject:\n" +
+            "                                    name: end\n" +
+            "                        expSet: !!set\n" +
+            "                            ? set2\n" +
+            "                            ? 123\n" +
+            "                        expObjectList:\n" +
+            "                            - expObject:\n" +
+            "                                name: aaa\n" +
+            "                            - expObject:\n" +
+            "                                name: bbb";
 }

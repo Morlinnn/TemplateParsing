@@ -81,8 +81,8 @@ public class AutoWireList {
     }
 
     protected static Type[] getGenericArgType(Type genericType) {
-        if (genericType instanceof ParameterizedType type) {
-            return type.getActualTypeArguments();
+        if (genericType instanceof ParameterizedType) {
+            return ((ParameterizedType) genericType).getActualTypeArguments();
         }
         return null;
     }
