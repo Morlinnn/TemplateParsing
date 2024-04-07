@@ -37,15 +37,15 @@ public class TemplateElement {
         if (type == DataType.List || type == DataType.Set || type == DataType.Map) {
             // elements 有且必须设置
             if (elements == null || elements.isEmpty()) {
-                throw new IllegalArgumentException(type.name() + " 必须设置 elements");
+                throw new IllegalArgumentException(type.name() + " 必须设置 elements, name: " + name);
             }
             // List, Set
             if ((type == DataType.List || type == DataType.Set) && elements.size() != 1) {
-                throw new IllegalArgumentException(type.name() + " 的 elements 只能设置一项");
+                throw new IllegalArgumentException(type.name() + " 的 elements 只能设置一项, name: " + name);
             }
             // Map
             if (type == DataType.Map && elements.size() != 2) {
-                throw new IllegalArgumentException("Map 的 elements 只能设置两项");
+                throw new IllegalArgumentException("Map 的 elements 只能设置两项, name: " + name);
             }
         }
 
@@ -53,7 +53,7 @@ public class TemplateElement {
 
         // limit
         if (limit != null && (limit.isEmpty() || limit.size() > 2)) {
-            throw new IllegalArgumentException("已设置的 limit 元素数量应为 1 或 2 项");
+            throw new IllegalArgumentException("已设置的 limit 元素数量应为 1 或 2 项, name: " + name);
         }
 
         return type != null;

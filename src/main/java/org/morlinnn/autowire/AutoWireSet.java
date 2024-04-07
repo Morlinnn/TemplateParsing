@@ -44,7 +44,7 @@ public class AutoWireSet {
 
         // dynamic
         if (valueType == DataType.class && fieldType != Object.class) {
-            throw new IllegalTypeException("Dynamic 类型的接收类应该是 Object");
+            throw new IllegalTypeException("Dynamic 类型的接收类应该是 Object, name: " + valueElement.getName());
         } else if (fieldType == Object.class) {
             return;
         }

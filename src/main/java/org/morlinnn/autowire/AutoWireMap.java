@@ -62,13 +62,13 @@ public class AutoWireMap {
 
         // dynamic
         if (keyType == DataType.class && keyFieldType != Object.class) {
-            throw new IllegalTypeException("Dynamic 类型的接收类应该是 Object");
+            throw new IllegalTypeException("Dynamic 类型的接收类应该是 Object, name: " + valueElement.getName());
         } else if (keyType != DataType.class) {
             TabHandler.handleIfTypeNotConsistent(keyFieldType, Object.class, keyType);
         }
 
         if (valueType == DataType.class && valueFieldType != Object.class) {
-            throw new IllegalTypeException("Dynamic 类型的接收类应该是 Object");
+            throw new IllegalTypeException("Dynamic 类型的接收类应该是 Object, name: " + valueElement.getName());
         } else if (valueType != DataType.class) {
             TabHandler.handleIfTypeNotConsistent(valueFieldType, Object.class, valueType);
         }
