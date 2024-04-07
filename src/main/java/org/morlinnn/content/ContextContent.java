@@ -21,7 +21,8 @@ public class ContextContent {
 
     public void add(TemplateElement element, boolean recover) {
         if (element == null) return;
-        for (TemplateElement e : templateElementList) {
+        for (int i = 0; i < templateElementList.size(); i++) {
+            TemplateElement e = templateElementList.get(i);
             if (e.getId() == element.getId()) {
                 if (recover) {
                     templateElementList.remove(e);
@@ -43,8 +44,9 @@ public class ContextContent {
      * @return
      */
     public TemplateElement find(int id) {
-        for (TemplateElement element : templateElementList) {
-            if (element.getId() == id) return element;
+        for (int i = 0; i < templateElementList.size(); i++) {
+            TemplateElement e = templateElementList.get(i);
+            if (e.getId() == id) return e;
         }
         return null;
     }
@@ -56,15 +58,17 @@ public class ContextContent {
      * @return
      */
     public TemplateElement find(String name) {
-        for (TemplateElement element : templateElementList) {
-            if (element.getName().equals(name)) return element;
+        for (int i = 0; i < templateElementList.size(); i++) {
+            TemplateElement e = templateElementList.get(i);
+            if (e.getName().equals(name)) return e;
         }
         return null;
     }
 
     public TemplateElement findInElement(String name) {
         AtomicReference<TemplateElement> result = new AtomicReference<>(null);
-        for (TemplateElement element : templateElementList) {
+        for (int i = 0; i < templateElementList.size(); i++) {
+            TemplateElement element = templateElementList.get(i);
             if (element instanceof SelectTemplateElement) continue;
             if (element.getElements() == null || element.getElements().isEmpty()) continue;
 
@@ -114,10 +118,12 @@ public class ContextContent {
         templateElementList.forEach(templateElement -> {
             if (templateElement.getExclusive() == null || templateElement.getExclusive().isEmpty()) return;
 
-            for (List<String> exclusiveItem : templateElement.getExclusive()) {
-                for (int i = 0; i < exclusiveItem.size(); i++) {
-                    if (exclusiveItem.get(i).startsWith("id(") || exclusiveItem.get(i).contains(":")) {
-                        exclusiveItem.set(i, TemplateReader.parseUnknownToName(exclusiveItem.get(i), this));
+            for (int i = 0; i < templateElement.getExclusive().size(); i++) {
+                List<String> exclusiveItem = templateElement.getExclusive().get(i);
+                for (int j = 0; j < exclusiveItem.size(); j++) {
+                    String exclusiveItemItem = exclusiveItem.get(j);
+                    if (exclusiveItemItem.startsWith("id(") || exclusiveItemItem.contains(":")) {
+                        exclusiveItem.set(j, TemplateReader.parseUnknownToName(exclusiveItemItem, this));
                     }
                 }
             }
