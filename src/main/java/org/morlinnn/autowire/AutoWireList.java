@@ -53,7 +53,7 @@ public class AutoWireList {
 
         // dynamic
         if (templateElementType == DataType.class && fieldElementType != Object.class) {
-            throw new IllegalTypeException("Dynamic 类型的接收类应该是 Object");
+            throw new IllegalTypeException("Dynamic 类型的接收类应该是 Object, name: " + valueElement.getName());
         } else if (fieldElementType == Object.class) {
             return;
         }
@@ -119,7 +119,7 @@ public class AutoWireList {
             List<?> list = new Yaml().load(valueElement.getDefaultValue());
             field.set(obj, list instanceof ArrayList<?>? list : new ArrayList<>(list));
         } catch (ClassCastException ignore) {
-            throw new IllegalArgumentException(valueElement.getDefaultValue() + " 不是 List");
+            throw new IllegalArgumentException(valueElement.getDefaultValue() + " 不是 List, name: " + valueElement.getName());
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }

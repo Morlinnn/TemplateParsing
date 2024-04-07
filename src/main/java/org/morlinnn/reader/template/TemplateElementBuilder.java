@@ -25,7 +25,7 @@ public class TemplateElementBuilder {
                         element.setId(Integer.parseInt(value));
                     }
                 } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("id 应为 Integer 类型, 而不是 " + entry.getValue());
+                    throw new IllegalArgumentException("id 应为 Integer 类型, 而不是 " + entry.getValue() + ", name: " + element.getName());
                 }
                 break;
             }
@@ -33,7 +33,7 @@ public class TemplateElementBuilder {
                 try {
                     element.setType(DataType.valueOf(TemplateReader.removeUselessSpace(entry.getValue())));
                 } catch (IllegalArgumentException e) {
-                    throw new IllegalArgumentException("type 的书写错误 " + entry.getValue());
+                    throw new IllegalArgumentException("type 的书写错误 " + entry.getValue() + ", name: " + element.getName());
                 }
                 break;
             }
@@ -45,7 +45,7 @@ public class TemplateElementBuilder {
                 try {
                     element.setLimit(readLimit(TemplateReader.removeUselessSpace(entry.getValue())));
                 } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("limit 应为 Integer 类型, 而不是 " + entry.getValue());
+                    throw new IllegalArgumentException("limit 应为 Integer 类型, 而不是 " + entry.getValue() + ", name: " + element.getName());
                 }
                 break;
             }
@@ -59,16 +59,15 @@ public class TemplateElementBuilder {
             }
             case "selection": {
                 if (!(element instanceof SelectTemplateElement))
-                    throw new IllegalArgumentException("非 Select 模板写入了 selection");
+                    throw new IllegalArgumentException("非 Select 模板写入了 selection, name: " + element.getName());
                 String[] dividedSelect = TemplateReader.divide(entry.getValue());
-                if (dividedSelect == null) throw new IllegalArgumentException("Select 未指定有效的 selection");
-                if (dividedSelect[0] == null) throw new IllegalArgumentException("Select 应指定类型");
-                if (dividedSelect[1] == null) throw new IllegalArgumentException("Select 应指定选项");
+                if (dividedSelect == null) throw new IllegalArgumentException("Select 未指定有效的 selection, name: " + element.getName());
+                if (dividedSelect[0] == null || dividedSelect[1] == null) throw new IllegalArgumentException("Select 应指定类型, name: " + element.getName());
 
                 try {
                     ((SelectTemplateElement) element).setSelectionType(DataType.valueOf(TemplateReader.removeUselessSpace(dividedSelect[0])));
                 } catch (IllegalArgumentException e) {
-                    throw new IllegalArgumentException("type 的书写错误 " + TemplateReader.removeUselessSpace(dividedSelect[0]));
+                    throw new IllegalArgumentException("type 的书写错误 " + TemplateReader.removeUselessSpace(dividedSelect[0]) + ", name: " + element.getName());
                 }
                 try {
                     ((SelectTemplateElement) element)
@@ -79,7 +78,7 @@ public class TemplateElementBuilder {
                                     )
                             );
                 } catch (Exception e) {
-                    throw new IllegalArgumentException("selection 书写错误 " + dividedSelect[1]);
+                    throw new IllegalArgumentException("selection 书写错误 " + dividedSelect[1] + ", name: " + element.getName());
                 }
             }
             default: System.out.println("未匹配的键值对: " + entry);
@@ -111,7 +110,7 @@ public class TemplateElementBuilder {
 
     private List<Integer> readLimit(String str) {
         List<Integer> res = TemplateReader.divideFiled(str, ',').stream().map(Integer::parseInt).collect(Collectors.toList());
-        if (res.size() > 2) throw new IllegalArgumentException("limit 应最多包含 2 个元素, 而不是 " + str);
+        if (res.size() > 2) throw new IllegalArgumentException("limit 应最多包含 2 个元素, 而不是 " + str + ", name: " +element.getName());
         return res;
     }
 
