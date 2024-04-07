@@ -9,19 +9,17 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TemplateFileReader {
-    private static final String REPLACEMENT = "⣹⌚";
+    protected static final String REPLACEMENT = "⣹⌚";
 
     public static List<String> readTemplateFile(File templateFile) throws FileNotFoundException {
         if (!templateFile.exists()) throw new FileNotFoundException(templateFile.getName() + " 文件不存在");
-        List<String> templates;
         try {
             String str = new String(Files.readAllBytes(templateFile.toPath()));
-            str = str.replaceAll("\r?\n{2}", REPLACEMENT);
+            str = str.replaceAll("(\r?\n{2})", REPLACEMENT);
             str = str.replaceAll("[\r\n]", "");
-            templates = new ArrayList<>(Arrays.asList(str.split(REPLACEMENT)));
+            return new ArrayList<>(Arrays.asList(str.split(REPLACEMENT)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return templates;
     }
 }
