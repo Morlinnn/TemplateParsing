@@ -26,61 +26,74 @@ public enum DataType {
     Select;
 
     public boolean isBasicType() {
-        return switch (this) {
-            case Int, Bool, Long, Short, Byte, Char, Float, Double, String -> true;
-            default -> false;
-        };
+        switch (this) {
+            case Int:
+            case Bool:
+            case Long:
+            case Short:
+            case Byte:
+            case Char:
+            case Float:
+            case Double:
+            case String: {
+                return true;
+            }
+            default: {
+                return false;
+            }
+        }
     }
 
     public Class<?> getCorrespondingClass() {
         switch (this) {
-            case Object -> {
+            case Object: {
                 return java.lang.Object.class;
             }
-            case Dynamic -> {
+            case Dynamic: {
                 // 并没有打算创建一个新的标记类, 这只是偷懒的方法
                 return DataType.class;
             }
-            case Int -> {
+            case Int: {
                 return Integer.class;
             }
-            case Float -> {
+            case Float: {
                 return java.lang.Float.class;
             }
-            case Short -> {
+            case Short: {
                 return java.lang.Short.class;
             }
-            case Bool -> {
+            case Bool: {
                 return Boolean.class;
             }
-            case Byte -> {
+            case Byte: {
                 return Byte.class;
             }
-            case Char -> {
+            case Char: {
                 return Character.class;
             }
-            case Long -> {
+            case Long: {
                 return java.lang.Long.class;
             }
-            case Double -> {
+            case Double: {
                 return Double.class;
             }
-            case String -> {
+            case String: {
                 return java.lang.String.class;
             }
-            case Set -> {
+            case Set: {
                 return HashSet.class;
             }
-            case List, IsoMap -> {
+            case List:
+            case IsoMap: {
                 return ArrayList.class;
             }
-            case Map -> {
+            case Map: {
                 return HashMap.class;
             }
-            case Select -> {
+            case Select: {
                 throw new IllegalOperationException("真的需要获取 Select 的类型吗, 如果需要获取子项的类型应该使用 SelectTemplate#getSelectionType#getCorrespondingClass");
             }
-            default -> {
+            default: {
                 throw new UnknownException("值类型为空(来自于 DataType#getCorrespondingClass)");
             }
         }

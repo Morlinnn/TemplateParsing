@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AutoWireMap {
     public static void setMapArgs(
@@ -39,14 +40,14 @@ public class AutoWireMap {
                 valueElement.getElements()
                         .stream()
                         .filter(e -> e.startsWith("key"))
-                        .toList()
+                        .collect(Collectors.toList())
                         .get(0)
         );
         TemplateElement valueE = context.readField(
                 valueElement.getElements()
                         .stream()
                         .filter(e -> !e.startsWith("key"))
-                        .toList()
+                        .collect(Collectors.toList())
                         .get(0)
         );
         // template type
