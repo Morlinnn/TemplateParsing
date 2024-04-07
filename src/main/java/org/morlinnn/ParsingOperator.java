@@ -5,9 +5,12 @@ import org.morlinnn.content.Context;
 import org.morlinnn.interfaces.Adapter;
 import org.morlinnn.reader.TemplateFileReader;
 import org.morlinnn.reader.TemplateReader;
+import org.morlinnn.reader.TemplateStreamReader;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
@@ -23,6 +26,14 @@ public class ParsingOperator {
         TemplateFileReader
                 .readTemplateFile(templateFile)
                 .forEach(t -> context.add(TemplateReader.read(t), true));
+    }
+
+    public void loadTemplateStream(InputStream is) throws IOException {
+        TemplateStreamReader.readTemplateStream(is)
+                .forEach(t -> {
+                    System.out.println(t);
+                    context.add(TemplateReader.read(t), true);
+                });
     }
 
     public void addTemplateString(String templateStr) {
