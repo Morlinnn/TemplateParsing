@@ -1,11 +1,12 @@
 package org.morlinnn.autowire;
 
+import lombok.NonNull;
 import org.morlinnn.content.ContextContent;
 import org.morlinnn.exception.IllegalTypeException;
 import org.morlinnn.reader.template.TemplateElement;
 
 public class TabHandler {
-    public static void required(TemplateElement valueElement, Object value, String fieldName) {
+    public static void required(@NonNull TemplateElement valueElement, Object value, String fieldName) {
         if (valueElement.isRequired() && value == null) {
             throw new NullPointerException(fieldName + " 被标记 required, 不可为空");
         }

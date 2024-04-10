@@ -1,5 +1,6 @@
 package org.morlinnn.autowire;
 
+import lombok.NonNull;
 import org.morlinnn.content.Context;
 import org.morlinnn.content.ContextContent;
 import org.morlinnn.enums.DataType;
@@ -33,6 +34,13 @@ public class AutoWire {
         return obj;
     }
 
+    /**
+     *
+     * @param obj
+     * @param context
+     * @param objElement
+     * @param args 装载的数据
+     */
     protected static void autoAssignArgs(
             Object obj,
             Context context,
@@ -41,6 +49,7 @@ public class AutoWire {
     ) {
         Set<Map.Entry<String, Object>> argEntry = args.entrySet();
         argEntry.forEach(entry -> {
+            System.out.println(entry);
             assign(
                     obj,
                     entry.getKey(),
@@ -65,6 +74,7 @@ public class AutoWire {
      * @param fieldName field 名称
      * @param value field 需要赋的值, 由 Map/List/Set获取
      * @param context 上下文
+     * @param objElement obj 的模板
      * @param valueElement 值的模板
      * @param args 父类数据
      */
@@ -74,7 +84,7 @@ public class AutoWire {
             Object value,
             Context context,
             TemplateElement objElement,
-            TemplateElement valueElement,
+            @NonNull TemplateElement valueElement,
             Map<String, Object> args
     ) {
         // required
