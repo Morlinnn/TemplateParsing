@@ -12,7 +12,7 @@ public class Context extends ContextContent {
     /**
      * 处于安全考虑设计了本地检查, 对于使用自定义类的反射构建只能使用注册的类
     */
-    private Map<String, Class<? extends Adapter>> correlativeClassMap;
+    private final Map<String, Class<? extends Adapter>> correlativeClassMap;
 
     public Context() {
         super();
