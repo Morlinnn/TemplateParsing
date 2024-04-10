@@ -29,7 +29,7 @@ public class TemplateElement {
     protected String defaultValue;
     protected boolean constant = false;
 
-    public boolean checkIntegrality() {
+    public boolean checkIntegrality(ContextContent context) {
         // Set
         if (type == DataType.Set && !constant) constant = true;
 
@@ -49,7 +49,20 @@ public class TemplateElement {
             }
         }
 
-        // 检查 Map
+        // exclusive
+        // exclusive 元素必须存在于 elements 中
+        if (exclusive != null && !exclusive.isEmpty()) {
+            for (int i = 0; i < exclusive.size(); i++) {
+                A: for (int j = 0; j < exclusive.get(i).size(); j++) {
+                    if (elements.contains(exclusive.get(i).get(j))) continue;
+                    for (String element : elements) {
+                        TemplateElement e = context.readField(element);
+                        if (e.getName().equals(exclusive.get(i).get(j))) continue A;
+                    }
+                    throw new IllegalArgumentException("exclusive: " + exclusive.get(i).get(j) + " 不存在于 name: " + name + " 的 elements 中");
+                }
+            }
+        }
 
         // limit
         if (limit != null && (limit.isEmpty() || limit.size() > 2)) {

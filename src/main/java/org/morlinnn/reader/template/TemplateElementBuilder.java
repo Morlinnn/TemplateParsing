@@ -1,5 +1,6 @@
 package org.morlinnn.reader.template;
 
+import org.morlinnn.content.ContextContent;
 import org.morlinnn.enums.DataType;
 import org.morlinnn.reader.TemplateReader;
 
@@ -10,10 +11,12 @@ import java.util.stream.Collectors;
 
 public class TemplateElementBuilder {
     private final TemplateElement element;
+    private final ContextContent context;
 
-    public TemplateElementBuilder(String name, boolean isSelect) {
+    public TemplateElementBuilder(String name, boolean isSelect, ContextContent context) {
         element = isSelect ? new SelectTemplateElement() : new TemplateElement();
         element.setName(name);
+        this.context = context;
     }
 
     public void addEntry(Map.Entry<String, String> entry) {
@@ -95,8 +98,7 @@ public class TemplateElementBuilder {
     }
 
     public TemplateElement build() {
-//        System.out.println(element);
-        if (!element.checkIntegrality()) return null;
+        if (!element.checkIntegrality(context)) return null;
         return element;
     }
 

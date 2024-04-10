@@ -8,7 +8,7 @@ import org.morlinnn.reader.template.TemplateElementBuilder;
 import java.util.*;
 
 public class TemplateReader {
-    public static TemplateElement read(String str) {
+    public static TemplateElement read(String str, ContextContent context) {
         if (!checkValid(str)) {
             System.out.println("无效的模板元素: " + str);
             return null;
@@ -24,7 +24,7 @@ public class TemplateReader {
         List<String> field = divideFiled(divided[1], ',');
 
         TemplateElementBuilder templateElementBuilder =
-                new TemplateElementBuilder(name, isSelectTemplate(divided[1]));
+                new TemplateElementBuilder(name, isSelectTemplate(divided[1]), context);
 
         field.forEach(e -> {
             if (e.contains("(")) {

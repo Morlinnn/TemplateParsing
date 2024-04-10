@@ -25,18 +25,18 @@ public class ParsingOperator {
     public void loadTemplateFile(File templateFile) throws FileNotFoundException {
         TemplateFileReader
                 .readTemplateFile(templateFile)
-                .forEach(t -> context.add(TemplateReader.read(t), true));
+                .forEach(t -> context.add(TemplateReader.read(t, context), true));
     }
 
     public void loadTemplateStream(InputStream is) throws IOException {
         TemplateStreamReader.readTemplateStream(is)
                 .forEach(t -> {
-                    context.add(TemplateReader.read(t), true);
+                    context.add(TemplateReader.read(t, context), true);
                 });
     }
 
     public void addTemplateString(String templateStr) {
-        context.add(TemplateReader.read(templateStr), true);
+        context.add(TemplateReader.read(templateStr, context), true);
     }
 
     public ParsingOperator registerCorrelativeClass(String fieldName, Class<? extends Adapter> clazz) {

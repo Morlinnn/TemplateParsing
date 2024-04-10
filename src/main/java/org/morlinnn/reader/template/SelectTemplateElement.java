@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.morlinnn.content.ContextContent;
 import org.morlinnn.enums.DataType;
 
 import java.util.List;
@@ -17,8 +18,8 @@ public class SelectTemplateElement extends TemplateElement {
     private List<?> selection;
 
     @Override
-    public boolean checkIntegrality() {
-        return super.checkIntegrality() && selectionType != null && selection != null && !selection.isEmpty();
+    public boolean checkIntegrality(ContextContent context) {
+        return super.checkIntegrality(context) && selectionType != null && selection != null && !selection.isEmpty();
     }
 
     public boolean isInSelection(Object select) {
