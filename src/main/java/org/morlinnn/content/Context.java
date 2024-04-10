@@ -45,7 +45,7 @@ public class Context extends ContextContent {
     }
 
     private Object createObjectPri(Class<?> clazz, TemplateElement element, Map<String, Object> args) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        if (!unchanged) parseExclusiveItemToName();
+        if (!unchanged) parseIdToName();
         return AutoWire.buildObject(clazz, this, element, args);
     }
 
