@@ -23,7 +23,7 @@ public class ContextContent {
         if (element == null) return;
         for (int i = 0; i < templateElementList.size(); i++) {
             TemplateElement e = templateElementList.get(i);
-            if (e.getId() == element.getId()) {
+            if (e.getId() == element.getId() && e.getId() != -1) {
                 if (recover) {
                     templateElementList.remove(e);
                     templateElementList.add(element);
@@ -65,6 +65,11 @@ public class ContextContent {
         return null;
     }
 
+    /**
+     * 从加入的模板中
+     * @param name
+     * @return
+     */
     public TemplateElement findInElement(String name) {
         AtomicReference<TemplateElement> result = new AtomicReference<>(null);
         for (int i = 0; i < templateElementList.size(); i++) {
@@ -74,7 +79,10 @@ public class ContextContent {
 
             List<String> elements = element.getElements();
             elements.forEach(str -> {
-                if (str.startsWith(name)) {
+                if (result.get() == null && str.equals(name)) {
+                    result.set(readField(str));
+                }
+                if (result.get() == null && str.contains(":") && TemplateReader.divide(str)[0].equals(name)) {
                     result.set(readField(str));
                 }
             });
@@ -108,13 +116,31 @@ public class ContextContent {
             // 写的是模板基本数据模板或完整模板
             // 但在 elements 中写入完整模板是不推荐的, 因为此处的模板不可复用
             // test: type(Char), required
-            return TemplateReader.read(stringField);
+            return TemplateReader.read(stringField, this);
         }
         return res.isEmpty() ? null : res.get(0);
     }
 
-    protected void parseExclusiveItemToName() {
+    protected void parseIdToName() {
         unchanged = true;
+        parseExclusiveItemToName();
+        parseElementItemToName();
+    }
+
+    private void parseElementItemToName() {
+        templateElementList.forEach(templateElement -> {
+            if (templateElement.getElements() == null || templateElement.getElements().isEmpty()) return;
+
+            for (int i = 0; i < templateElement.getElements().size(); i++) {
+                String element = templateElement.getElements().get(i);
+                if (element.startsWith("id(")) {
+                    templateElement.getElements().set(i, TemplateReader.parseUnknownToName(element, this));
+                }
+            }
+        });
+    }
+
+    private void parseExclusiveItemToName() {
         templateElementList.forEach(templateElement -> {
             if (templateElement.getExclusive() == null || templateElement.getExclusive().isEmpty()) return;
 
