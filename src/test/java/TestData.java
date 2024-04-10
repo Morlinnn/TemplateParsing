@@ -23,6 +23,8 @@ public class TestData {
     static String t6 = "expObject: id(6), type(Object), elements(name: type(String), required; expObject)";
     static String t7 = "expSet: id(7), type(Set), elements(value: type(Dynamic))";
     static String t8 = "expObjectList: id(8), type(List), elements(id(6))";
+    static String t9 = "exclusive: type(Object), elements(name1: type(String); name2: type(String), exclusive(name1; name2))";
+
     static String yamlConfig = "Config:\n" +
             "                        second: 1.0\n" +
             "                        expMap:\n" +
