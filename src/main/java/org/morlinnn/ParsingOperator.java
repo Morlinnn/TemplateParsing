@@ -31,7 +31,6 @@ public class ParsingOperator {
     public void loadTemplateStream(InputStream is) throws IOException {
         TemplateStreamReader.readTemplateStream(is)
                 .forEach(t -> {
-                    System.out.println(t);
                     context.add(TemplateReader.read(t), true);
                 });
     }
