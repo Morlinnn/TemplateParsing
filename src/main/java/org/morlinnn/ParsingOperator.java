@@ -30,9 +30,7 @@ public class ParsingOperator {
 
     public void loadTemplateStream(InputStream is) throws IOException {
         TemplateStreamReader.readTemplateStream(is)
-                .forEach(t -> {
-                    context.add(TemplateReader.read(t, context), true);
-                });
+                .forEach(t -> context.add(TemplateReader.read(t, context), true));
     }
 
     public void addTemplateString(String templateStr) {
