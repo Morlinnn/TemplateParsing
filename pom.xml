@@ -6,7 +6,7 @@
 
     <groupId>org.morlinnn</groupId>
     <artifactId>TemplateParsing</artifactId>
-    <version>0.0.9-alpha</version>
+    <version>0.0.10-alpha</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
