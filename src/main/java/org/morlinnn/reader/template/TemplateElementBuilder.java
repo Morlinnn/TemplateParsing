@@ -80,8 +80,9 @@ public class TemplateElementBuilder {
                 } catch (Exception e) {
                     throw new IllegalArgumentException("selection 书写错误 " + dividedSelect[1] + ", name: " + element.getName());
                 }
+                break;
             }
-            default: System.out.println("未匹配的键值对: " + entry);
+            default: System.out.println("未匹配的键值对: " + entry + ", name: " + element.getName());
         }
     }
 
